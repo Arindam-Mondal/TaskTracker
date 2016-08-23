@@ -1,0 +1,10 @@
+@CHARSET "UTF-8";
+
+body {
+	background: #E3F2FC;
+	font-family: 'Raleway', sans-serif;
+}
+
+.signuparea{
+	padding: 10px 400px;
+}
