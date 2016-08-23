@@ -1,0 +1,35 @@
+create table userDetails (name varchar(100) not null,
+email varchar(100) not null,
+userid varchar(50) not null,
+password varchar(50) not null,
+dateOfBirth date not null,
+primary key (userid)
+);
+
+create table taskDetails(
+taskid varchar(8),
+taskname varchar(200),
+userid varchar(50),
+status varchar(20),
+created datetime,
+modified datetime,
+starttime datetime,
+endtime datetime,
+primary key(taskid),
+foreign key(userid) references userDetails(userid)
+);
+
+create table taskDescription(
+taskid varchar(8),
+taskdesc text,
+primary key(taskid),
+foreign key(taskid)references taskDetails(taskid));
+
+create table commentsDetails(
+taskid varchar(8),
+userid varchar(50),
+created datetime,
+comments text,
+primary key(taskid,Userid,created),
+foreign key(taskid)references taskDetails(taskid),
+foreign key(userid)references userDetails(userid));
