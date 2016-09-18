@@ -8,78 +8,66 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Status Tracker Logging</title>
 
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet"
-	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-<link rel="stylesheet"
-	href='<spring:url value="/resources/css/login.css"/>' type="text/css" />
+	href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 <script
-	src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script
-	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+	src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<spring:url value="/resources/css/login.css" var="cssUrl" />
+<link rel="stylesheet" href="${cssUrl}" type="text/css" />
+
 </head>
 <body>
-	<div class="middlePage">
-		<div class="page-header">
-			<h1 class="logo">
-				Task Tracker <small>Welcome to our place!</small>
-			</h1>
-		</div>
-
-		<div class="panel panel-info">
-			<div class="panel-heading">
-				<h3 class="panel-title">Please Sign In</h3>
-			</div>
-			<div class="panel-body">
-
-				<div class="row">
-
-					<div class="col-md-5">
-						<!-- <a href="#"><img src="http://techulus.com/buttons/fb.png" /></a><br/>
-							 <a href="#"><img src="http://techulus.com/buttons/tw.png" /></a><br/>
-							 <a href="#"><img src="http://techulus.com/buttons/gplus.png" /></a> -->
+	<div class="pageheader">Task Tracker</div>
+	<div class="container">
+		<div class="row maindiv">
+			<div class="col-md-4 col-sm-4"></div>
+			<div class="col-md-4 col-sm-4 col-xs-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title">
+							<strong>Sign in </strong>
+						</h3>
 					</div>
-
-					<div class="col-md-7"
-						style="border-left: 1px solid #ccc; height: 160px">
-
-						<form class="form-horizontal"
-							action='<spring:url value="/application/login"></spring:url>'
-							method="post">
-							<fieldset>
-								<%-- <div class="spacing">
-									<span class="errormsg"><c:out value="${errormsg}" /></span>
-								</div> --%>
-								<input id="textinput" name="username" type="text"
-									placeholder="Enter User Name" class="form-control input-md">
-								<div class="spacing">
-									<input type="checkbox" name="checkboxes" id="checkboxes-0"
-										value="1"><small> Remember me</small>
-								</div>
-								<input id="textinput" name="password" type="password"
-									placeholder="Enter Password" class="form-control input-md">
-								<div class="spacing">
-									<a href="#"><small> Forgot Password?</small></a><br />
-								</div>
-								<button id="singlebutton" name="singlebutton"
-									class="btn btn-info btn-sm pull-right">Sign In</button>
-
-
-							</fieldset>
+					<div class="panel-body">
+						<c:if test="${not empty errormsg}">
+   							<div class="alert alert-danger" role="alert">
+   							<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+							<strong>${errormsg}</strong>
+						</div>
+						</c:if>
+						<spring:url value="/application/login" var="actionUrl" />
+						<form action="${actionUrl}" method="post">
+							<div class="form-group input-group">
+								<span class="input-group-addon"><i
+									class="glyphicon glyphicon-user"></i></span> <input type="text"
+									class="form-control" name="username"
+									placeholder="Enter User Name" required="required">
+							</div>
+							<div class="form-group input-group">
+								<span class="input-group-addon"><i
+									class="glyphicon glyphicon-lock"></i></span> <input type="password"
+									class="form-control" name="password"
+									placeholder="Enter Password" required="required">
+							</div>
+							<button id="singlebutton" name="singlebutton"
+								class="btn btn-primary btn-block">Login</button>
 						</form>
+						<hr />
+						<!-- New Member -->
+						<div class="row newmem">
+							<div class="col-xs-12">
+								<a href="<%=request.getContextPath()%>/register"
+									class="btn btn-block btn-success">Sign Up</a>
+							</div>
+						</div>
 					</div>
-
 				</div>
-
 			</div>
+			<div class="col-md-4 col-sm-4"></div>
 		</div>
-
-		<div class="signup text-center">
-			<h4>
-				Not yet a member! <a href="<%=request.getContextPath()%>/register">Sign
-					Up.</a>
-			</h4>
-		</div>
-
 	</div>
 </body>
 </html>

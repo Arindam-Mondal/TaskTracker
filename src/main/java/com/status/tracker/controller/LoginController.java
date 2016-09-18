@@ -2,6 +2,7 @@ package com.status.tracker.controller;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
@@ -36,7 +37,8 @@ public class LoginController {
 	public String validateUser(@RequestParam("username") String username,
 							   @RequestParam("password") String password,
 							   Model model,
-							   HttpSession session){
+							   HttpSession session,
+							   HttpServletResponse response){
 		
 		logger.info("In loggin controller");
 		try{
@@ -47,11 +49,16 @@ public class LoginController {
 			}
 			if(userDetails.getPassword().equals(password)){
 				
-				List<TaskInfo> taskDetails = taskService.displayTask(username);
 				model.addAttribute("name", userDetails.getName());
 				session.setAttribute("name", userDetails.getName());
 				session.setAttribute("userid", userDetails.getUserId());
-				model.addAttribute("taskDetails", taskDetails);
+				
+				response.sendRedirect("/tracker/application/displayTask");
+				/*List<TaskInfo> taskDetails = taskService.displayTask(username);
+				model.addAttribute("name", userDetails.getName());
+				session.setAttribute("name", userDetails.getName());
+				session.setAttribute("userid", userDetails.getUserId());
+				model.addAttribute("taskDetails", taskDetails);*/
 				return "dashboard";
 			}else{
 				model.addAttribute("errormsg", "password entered is wrong.");

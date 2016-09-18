@@ -13,13 +13,13 @@
 		destroy-method="close">
 		<beans:property name="driverClassName" value="com.mysql.cj.jdbc.Driver" />
 		<!-- local config -->
-		<!-- <beans:property name="url" value="jdbc:mysql://localhost:3306/stracker" />
+		<beans:property name="url" value="jdbc:mysql://localhost:3306/stracker" />
 		<beans:property name="username" value="admin" />
-		<beans:property name="password" value="admin" /> -->
+		<beans:property name="password" value="admin" />
 		<!-- freemysqlhosting config -->
-		<beans:property name="url" value="jdbc:mysql://sql6.freemysqlhosting.net/sql6132597" />
-		<beans:property name="username" value="sql6132597" />
-		<beans:property name="password" value="4Zz6x7zVqI" />
+		<!-- <beans:property name="url" value="jdbc:mysql://sql6.freemysqlhosting.net/sql6133815" />
+		<beans:property name="username" value="sql6133815" />
+		<beans:property name="password" value="E2D5lNqiCw" /> -->
 	</beans:bean>
 
 	<!-- Hibernate 4 SessionFactory Bean definition -->

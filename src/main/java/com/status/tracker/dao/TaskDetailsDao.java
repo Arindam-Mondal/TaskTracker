@@ -14,5 +14,7 @@ public interface TaskDetailsDao {
 	public List<TaskInfo> searchTask(String keyword);
 	public List<TaskInfo> displayTask(String userId);
 	public void addComments(CommentsDetails commentsDetails) throws Exception;
+	public TaskInfo displaySingleTask(String userid, String taskId);
+	public void editTask(TaskDetails task, TaskDescription desc);
 
 }

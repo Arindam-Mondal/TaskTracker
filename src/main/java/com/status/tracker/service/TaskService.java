@@ -14,5 +14,7 @@ public interface TaskService {
 	public void addTask(String taskname,String userid,String status,String starttime,String endtime);
 	public void addComments(CommentsDetails commentsDetails) throws Exception;
 	public List<TaskInfo> searchTask(String searchkey);
+	public TaskInfo displaySingleTask(String userid, String taskId);
+	public void editTask(TaskDetails task, TaskDescription desc);
 
 }

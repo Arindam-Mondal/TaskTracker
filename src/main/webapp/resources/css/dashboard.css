@@ -1,26 +1,19 @@
 @CHARSET "UTF-8";
 
-body {
-	background: #E3F2FC;
-	font-family: 'Raleway', sans-serif;
+.container {
+	padding-top: 100px;
 }
 
-.row-spacing {
-	margin-top: 0px;
-	margin-right: 0px;
-	margin-bottom: 0px;
-	margin-left: 0px;
+.form-control .desc-area {
+	height: 125px;
+	width: 445px;
 }
 
-.header {
-	margin-top: 10px;
-	margin-right: 0px;
-	margin-bottom: 10px;
-	margin-left: 0px;
-	height: 40px;
-	background-color: #66b3ff;
-}
-
-.header-element-spacing {
-	padding-top: 5px;
+textarea[name=taskdesc] {
+	/* resize: vertical; */
+	max-height: 150px;
+	min-height: 150px;
+	/* resize: horizontal; */
+	max-width: 100%;
+	min-width: 100%;
 }

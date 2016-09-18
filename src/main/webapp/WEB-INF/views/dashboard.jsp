@@ -12,232 +12,221 @@
 <title>Status Tracker Dashboard</title>
 <link rel="stylesheet"
 	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" />
-<link
-	href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"
-	rel="stylesheet" />
-<spring:url value="/resources/css/dashboard.css" var="cssUrl" />
-<link rel="stylesheet" href="${cssUrl}" type="text/css" />
 <link rel="stylesheet"
-	href="//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css" />
+	href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" />
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 <script
 	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-<script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
+<!-- cdn datatables -->
+<link rel="stylesheet" type="text/css"
+	href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css" />
+<script type="text/javascript" src="//code.jquery.com/jquery-1.12.3.js"></script>
+<script type="text/javascript"
+	src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
 
-<!-- Compiled and minified CSS -->
+<!-- cdn jquery and jquery-ui -->
+<!-- <script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 <link rel="stylesheet"
-	href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/css/materialize.min.css">
-
-<!-- Compiled and minified JavaScript -->
+	href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.0/themes/smoothness/jquery-ui.css">
 <script
-	src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
+	src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.js"></script> -->
+
+<spring:url value="/resources/css/dashboard.css" var="cssUrl" />
+<link rel="stylesheet" href="${cssUrl}" type="text/css" />
+
+<spring:url value="/resources/css/application.css" var="appcssUrl" />
+<link rel="stylesheet" href="${appcssUrl}" type="text/css" />
+
 <script>
 	$(document).ready(function() {
-		$(function() {
-			var value = $('#checkmessage').val();
-			if(value.length >1){
-				$("#createtaskdiv").show();
-			}else{
-				$("#createtaskdiv").hide();
-			}
-			
-		});
-		$(function() {
-			$("#datepicker1").datepicker();
-		});
-		$(function() {
-			$("#datepicker2").datepicker();
-		});
-		$("#createtaskbttn").click(function() {
-			$("#createtaskdiv").show();
-		});
-		$("#comments").keypress(function(event) {
-			if (event.which == 13) {
-				event.preventDefault();
-				$("#commentsform").submit();
-			}
-		});
-		/* $(".editstatus").click(function() {
-			$(".taskstatus").hide();
-		}); */
-		$("body").on("click", "button[class=editstatus]", function() {
-			$(".taskstatus").hide();
-		});
+		$('#example').DataTable();
+		$('#add-task').hide();
 	});
+	function titleFormatting() {
+		var taskName = document.getElementById("taskname");
+		console.log(taskName.value);
+		var taskTitle = taskName.value.split(" ");
+		console.log(taskTitle);
+		var titleCase = "";
+		for (var i = 0; i < taskTitle.length; i++) {
+			taskTitle[i] = taskTitle[i].replace(taskTitle[i].charAt(0),
+					taskTitle[i].charAt(0).toUpperCase());
+		}
+		console.log(taskTitle);
+		for (var i = 0; i < taskTitle.length; i++) {
+			titleCase = titleCase + " " + taskTitle[i];
+		}
+		console.log(titleCase);
+		taskName.value = titleCase;
+		//document.getElementById("taskname").innerHTML = titleCase;
+	}
+	function toggleTask() {
+		//create-task add-task
+		var elmnt = document.getElementById("create-task");
+		var x = elmnt.value;
+		if (x === "ctask") {
+			document.getElementById("add-task").style.display = "block";
+			document.getElementById("create-task").innerHTML = "Hide";
+			document.getElementById("create-task").value = "htask";
+			//console.log(document.getElementById("cbutton").value);
+		}
+		if (x === "htask") {
+			console.log(document.getElementById("create-task").value);
+			document.getElementById("add-task").style.display = "none";
+			document.getElementById("create-task").innerHTML = "Create Task";
+			document.getElementById("create-task").value = "ctask";
+		}
+	}
 </script>
 
 </head>
 <body>
+	<!-- <div class="pageheader">Status Tracker</div> -->
+	<nav class="navbar navbar-default navbar-fixed-top navbar-custom"
+		role="navigation">
 	<div class="container-fluid">
-		<div class="row"
-			style="background-color: #011624; border-width: 0px; margin-left: -15px; margin-right: -15px; height: 60px;">
-			<div class="row" style="margin-left: 0px; margin-top: 10px;">
-				<div class="col-sm-4 search" style="width: 300px;">
-					<spring:url value="/application/searchTask" var="formUrl" />
-					<form:form action="${formUrl}" method="POST"
-						modelAttribute="userDetails">
-						<div class="col-sm-3 search" style="width: 200px;">
-							<input type="text" name="searchkey" placeholder="Search">
-						</div>
-						<div class="col-sm-1 search" style="padding-left: 0px;">
-							<button type="submit" class="btn"
-								style="padding-right: 10px; padding-left: 10px;">
-								<i class="fa fa-search"></i>
+		<!-- Brand and toggle get grouped for better mobile display -->
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse"
+				data-target="#myNavbar">
+				<span class="icon-bar"></span> <span class="icon-bar"></span> <span
+					class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="<%=request.getContextPath()%>/">Task
+				Tracker</a>
+		</div>
+		<div class="collapse navbar-collapse" id="myNavbar">
+			<div class="col-sm-3 col-md-3">
+				<form role="search" class="navbar-form">
+					<div class="input-group">
+						<input type="text" name="q" placeholder="Search"
+							class="form-control">
+						<div class="input-group-btn">
+							<button type="submit" class="btn btn-default">
+								<i class="glyphicon glyphicon-search"></i>
 							</button>
 						</div>
-					</form:form>
-				</div>
-				<div class="col-sm-2" style="width: 180px;">
-					<button type="submit" class="btn" id="createtaskbttn">New
-						Task</button>
-				</div>
-				<div class="col-sm-2" style="font-size: 25px; color: #CCC;">
-					<b>Task Tracker</b>
-				</div>
-				<div class="col-sm-2">
-					<a href="<%=request.getContextPath()%>/application/displayTask">
-						<button class="btn">
-							<c:out value="${name}" />
-						</button>
-					</a>
-				</div>
-				<div class="dropdown col-sm-2" style="width: 70px;">
-					<button class="btn dropdown-toggle" type="button"
-						data-toggle="dropdown">
-						<i class="fa fa-list" aria-hidden="true"></i> <span class="caret"></span>
-					</button>
-					<ul class="dropdown-menu">
-						<li><a href="#">Edit Profile</a></li>
-						<li><a href="<%=request.getContextPath()%>/logout">Logout</a></li>
-					</ul>
-				</div>
+					</div>
+				</form>
+			</div>
+			<div>
+				<ul class="nav navbar-nav navbar-right">
+					<li>
+						<p class="navbar-text">
+							Signed in as <a
+								href="<%=request.getContextPath()%>/application/displayTask"
+								class="navbar-link">${name}</a>
+						</p>
+					</li>
+					<li class="dropdown"><a href="#" class="dropdown-toggle"
+						data-toggle="dropdown" role="button" aria-haspopup="true"
+						aria-expanded="false">Options <span class="caret"></span></a>
+						<ul class="dropdown-menu">
+							<li><a href="#">Edit Profile</a></li>
+							<li><a href="<%=request.getContextPath()%>/logout">Logout</a></li>
+						</ul></li>
+				</ul>
 			</div>
 		</div>
-		<!-- div to add new task -->
+	</div>
+	</nav>
+	<div class="container">
 		<div class="row">
-		<input type="hidden" id="checkmessage" value="${message}" >
+			<div class="col-md-2 col-sm-2 col-xs-12">
+				<button class="btn btn-block btn-success" id="create-task" value="ctask" onClick="toggleTask()">Create
+					Task</button>
+			</div>
 		</div>
-			<div class="row crtdiv" id="createtaskdiv"
-				style="display: block; margin-right: 600px; margin-left: 200px;">
+		<hr />
+		<div id="add-task">
+			<div class="alert alert-info" role="alert">
+				<!-- <a href="#" class="close" id="add-task-close">&times;</a> -->
 				<spring:url value="/application/addTask" var="formUrl" />
 				<form:form action="${formUrl}" method="POST"
 					modelAttribute="userDetails">
 					<div class="row">
-						<font color="red">${message}</font>
-					</div>
-					<div class="row">
-						<div class="col-sm-4">
+						<div class="col-sm-5">
 							<div class="form-group">
 								<label class="control-label" for="taskname">Title</label> <input
-									type="text" class="form-control" name="taskname"
-									placeholder="Enter title">
+									type="text" class="form-control" name="taskname" id="taskname"
+									placeholder="Enter title" onblur="titleFormatting()" required>
 							</div>
 						</div>
-						<div class="col-sm-4">
+						<div class="col-sm-3">
 							<div class="form-group">
 								<label class="control-label" for="startdate">Start Date</label>
 								<input type="text" class="form-control" name="starttime"
-									id="datepicker1" placeholder="Enter start date">
+									id="datepicker1" placeholder="Enter start date" required>
 							</div>
 						</div>
-						<div class="col-sm-4">
+						<div class="col-sm-3">
 							<div class="form-group">
 								<label class="control-label" for="enddate">End Date</label> <input
 									type="text" class="form-control" name="endtime"
-									id="datepicker2" placeholder="Enter end date">
+									id="datepicker2" placeholder="Enter end date" required>
 							</div>
 						</div>
 					</div>
-
 					<div class="row">
-						<div class="col-sm-8">
+						<div class="col-sm-5">
 							<div class="form-group">
 								<label class="control-label" for="description">Description</label>
-								<textarea rows="5" class="form-control" name="taskdesc"
-									placeholder="Enter brief description"></textarea>
+								<textarea rows="5" class="form-control desc-area"
+									name="taskdesc" placeholder="Enter brief description" required></textarea>
 							</div>
 						</div>
 					</div>
 					<div class="row">
-						<div class="col-sm-4">
+						<div class="col-sm-2">
 							<div class="form-group">
-								<button type="submit" class="btn" id="createtaskbttn">
-									Create New Task</button>
+								<button type="submit" class="btn btn-block btn-info"
+									id="createtaskbttn">Add Task</button>
 							</div>
 						</div>
 					</div>
 				</form:form>
 			</div>
-		
-		<!-- if there is no message -->
-				
-		<!-- if there is no message block ends -->
-		<div class="row"
-			style="margin-left: 200px; margin-top: 20px; border-style: solid; border-width: 0px; margin-right: 200px; padding-bottom: 0px; padding-right: 0px;">
-			<div class="col-sm-12">
+			<hr />
+		</div>
+		<table id="example" class="display" cellspacing="0" width="100%">
+			<thead>
+				<tr>
+					<th>Task</th>
+					<th>Start Date</th>
+					<th>End Date</th>
+					<th>Status</th>
+					<th>Action</th>
+				</tr>
+			</thead>
+			<tfoot>
+				<tr>
+					<th>Task</th>
+					<th>Start Date</th>
+					<th>End Date</th>
+					<th>Status</th>
+					<th>Action</th>
+				</tr>
+			</tfoot>
+			<tbody>
 				<c:if test="${fn:length(taskDetails) gt 0}">
 					<c:forEach items="${taskDetails}" var="task">
-						<div class="row well">
-							<h2>${task.taskDetails.taskname}</h2>
-							<h6>By ${task.taskDetails.userid}</h6>
-							<jsp:useBean id="now" class="java.util.Date" />
-							<fmt:formatDate var="date" value="${now}" pattern="yyyy-MM-dd" />
-							<c:if test="${task.taskDetails.endtime lt date }">
-								<h6>
-									<font color="red">Schedule date to complete the task is
-										over.</font>
-								</h6>
-								<h6>
-									<font color="red">Please complete and close the task.</font>
-								</h6>
-							</c:if>
-							<h6>To be completed by
-								${fn:substring(task.taskDetails.endtime, 0, 10)}</h6>
-							<p class="taskstatus">${task.taskDetails.status}
-								<c:if test="${sessionScope.userid eq task.taskDetails.userid}">
-								&nbsp;<button class="editstatus" class="btn">
-										<i class="fa fa-pencil" aria-hidden="true"></i>
-									</button>
-								</c:if>
-							<p>
-							<div class="row well">
-								<h4>${task.taskDescription.taskdesc}</h4>
-							</div>
-							<div class="row">
-								<%-- <c:if test="${fn:length(taskDetails.commentsDetailsList) gt 0}"> --%>
-								<c:forEach items="${task.commentsDetailsList}" var="comments">
-									<P>
-										<b>${comments.userid}</b> : ${comments.comments}
-									</P>
-								</c:forEach>
-								<%-- </c:if> --%>
-								<div class="row">
-									<div class="col-sm-12">
-										<spring:url value="/application/addComments" var="formUrl" />
-										<form:form action="${formUrl}" method="POST" id="commentsform">
-											<div class="form-group" style="margin-right: 500px;">
-												<input type="text" class="form-control" name="comments"
-													id="comments" placeholder="Write a comment..."> <input
-													type="hidden" name="taskid" id="taskid"
-													value="${task.taskDetails.taskid}"> <input
-													type="hidden" name="userid" id="userid"
-													value="${task.taskDetails.userid}">
-											</div>
-										</form:form>
-									</div>
-								</div>
-							</div>
-
-						</div>
+						<tr>
+							<td><a
+								href="<%=request.getContextPath()%>/application/taskDetails/${task.taskDetails.taskid}">${task.taskDetails.taskname}</a></td>
+							<td>${fn:substring(task.taskDetails.starttime, 0, 10)}</td>
+							<td>${fn:substring(task.taskDetails.endtime, 0, 10)}</td>
+							<td>${task.taskDetails.status}</td>
+							<td><a href="#" class="editor_edit">Edit</a>/<a href="#"
+								class="editor_remove">Delete</a></td>
+						</tr>
 					</c:forEach>
 				</c:if>
-				<c:if test="${fn:length(taskDetails) eq 0 }">
-				No Task To Display....
-				</c:if>
-			</div>
-		</div>
+
+			</tbody>
+		</table>
+
 	</div>
 </body>
 </html>

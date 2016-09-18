@@ -71,4 +71,22 @@ public class TaskServiceImpl implements TaskService{
 		
 	}
 
+
+
+	@Override
+	@Transactional
+	public TaskInfo displaySingleTask(String userid, String taskId) {
+		
+		return this.taskDetailsDao.displaySingleTask(userid,taskId);
+	}
+
+
+
+	@Override
+	@Transactional
+	public void editTask(TaskDetails task, TaskDescription desc) {
+		this.taskDetailsDao.editTask(task,desc);
+		
+	}
+
 }
