@@ -17,3 +17,6 @@ textarea[name=taskdesc] {
 	max-width: 100%;
 	min-width: 100%;
 }
+#userDetails{
+	margin-top: 10px;
+}

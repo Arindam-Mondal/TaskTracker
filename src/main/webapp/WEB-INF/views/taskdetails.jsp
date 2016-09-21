@@ -18,22 +18,22 @@
 	src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 <script
 	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+
 <!-- cdn datatables -->
-<link rel="stylesheet" type="text/css"
+<!-- <link rel="stylesheet" type="text/css"
 	href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css" />
 <script type="text/javascript" src="//code.jquery.com/jquery-1.12.3.js"></script>
 <script type="text/javascript"
-	src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
-<spring:url value="/resources/javascript/moment.js" var="momentjsUrl" />
-<script type="text/javascript" src="${momentjsUrl}"></script>
+	src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script> -->
 
 <!-- cdn jquery and jquery-ui -->
-<!-- <script
-	src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script type="text/javascript" src="//code.jquery.com/jquery-1.12.4.js"></script>
 <link rel="stylesheet"
-	href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.0/themes/smoothness/jquery-ui.css">
-<script
-	src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.js"></script> -->
+	href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+<spring:url value="/resources/javascript/moment.js" var="momentjsUrl" />
+<script type="text/javascript" src="${momentjsUrl}"></script>
 
 <spring:url value="/resources/css/taskdetails.css" var="cssUrl" />
 <link rel="stylesheet" href="${cssUrl}" type="text/css" />
@@ -41,20 +41,93 @@
 <spring:url value="/resources/css/application.css" var="appcssUrl" />
 <link rel="stylesheet" href="${appcssUrl}" type="text/css" />
 <script>
-	$(document).ready(function() {
-		$('#task-status').hover(function() {
-			$(this).find('span').text('Mark as Complete');
-		}, function() {
-			$(this).find('span').text('${taskDetails.taskDetails.status}');
-		});
-		$('#task-edit').hide();
-		$(function() {
-			$("#starttime").datepicker();
-		});
-		$(function() {
-			$("#endtime").datepicker();
-		});
-	});
+	$(document).ready(
+			function() {
+				$("#task-status").click(
+						function(event) {
+							var taskid = $('#taskid').val();
+							$.ajax({
+								url : "/tracker/application/updateStatus/",
+								data : {
+									"taskid" : taskid
+								},
+								type : "POST",
+								success : function(res) {
+									if (res) {
+										console.log(res);
+										$('#task-status').hide();
+										$('#completedstatus').find('span')
+												.text('Completed');
+										$('#completedstatus').show();
+
+									} else {
+										console.log(res);
+									}
+								}
+							});
+						});
+
+				$("#comments").keypress(
+						function(event) {
+							console.log(event.which);
+							console.log($(this).val());
+							if (event.which == 13) {
+
+								//var userid = $('#userid').val();
+								var taskid = $('#taskid').val();
+								var comments = $('#comments').val();
+								var userid = $('#userid').val();
+								$.ajax({
+									url : "/tracker/application/addComments/",
+									data : {
+										"taskid" : taskid,
+										"comments" : comments
+									},
+									type : "POST",
+
+									/* beforeSend : function(xhr) {
+										xhr.setRequestHeader("Accept",
+												"application/json");
+										xhr.setRequestHeader("Content-Type",
+												"application/json");
+									}, */
+
+									success : function(res) {
+										if (res) {
+											console.log(res);
+											var content = "<P><b>"
+													+ "${sessionScope.userid}"
+													+ "</b> : " + comments
+													+ "</P>";
+											$('#commentSection')
+													.append(content);
+											$('#comments').val("");
+
+										} else {
+											console.log(res);
+										}
+									}
+								});
+							}
+						});
+
+				$('#task-status').hover(
+						function() {
+							$(this).find('span').text('Mark as Complete');
+						},
+						function() {
+							$(this).find('span').text(
+									'${taskDetails.taskDetails.status}');
+						});
+				$('#task-edit').hide();
+				$('#completedstatus').hide();
+				$(function() {
+					$("#starttime").datepicker();
+				});
+				$(function() {
+					$("#endtime").datepicker();
+				});
+			});
 	function openEditDiv() {
 		//edit-btn task-details task-edit
 		var elmnt = document.getElementById("edit-btn");
@@ -100,9 +173,11 @@
 		</div>
 		<div class="collapse navbar-collapse" id="myNavbar">
 			<div class="col-sm-3 col-md-3">
-				<form role="search" class="navbar-form">
+				<spring:url value="/application/searchTask" var="formUrl" />
+				<form:form action="${formUrl}" method="POST"
+					modelAttribute="userDetails">
 					<div class="input-group">
-						<input type="text" name="q" placeholder="Search"
+						<input type="text" name="searchkey" placeholder="Search"
 							class="form-control">
 						<div class="input-group-btn">
 							<button type="submit" class="btn btn-default">
@@ -110,7 +185,7 @@
 							</button>
 						</div>
 					</div>
-				</form>
+				</form:form>
 			</div>
 			<div>
 				<ul class="nav navbar-nav navbar-right">
@@ -137,108 +212,178 @@
 		<div class="row">
 			<div class="col-md-2 col-sm-1"></div>
 			<div class="col-md-8 col-sm-10 col-sx-12">
+				<c:if
+					test="${sessionScope.userid ne taskDetails.taskDetails.userid }">
+					<div class="alert alert-info" id="alertInfo" role="alert">
+						You won't be able to edit Status or Task Details, since you are
+						not the creator of the task <a href="#" class="close"
+							id="add-task-close">&times;</a>
+					</div>
+				</c:if>
 				<div class="well">
-					<div class="row" align="right">
-						<div class="col-xs-12">
-							<button type="button" class="btn btn-default" id="edit-btn"
-								value="sedittask" onClick="openEditDiv()">
-								<span class="glyphicon glyphicon-edit"></span>
-							</button>
-						</div>
+					<div class="col-xs-12" align="right">
+						<c:choose>
+							<c:when
+								test="${sessionScope.userid eq taskDetails.taskDetails.userid }">
+								<button type="button" class="btn btn-default" id="edit-btn"
+									value="sedittask" onClick="openEditDiv()">
+									<span class="glyphicon glyphicon-edit"></span>
+								</button>
+							</c:when>
+							<c:otherwise>
+								<button type="button" class="btn btn-default"
+									disabled="disabled">
+									<span class="glyphicon glyphicon-edit"></span>
+								</button>
+							</c:otherwise>
+						</c:choose>
 					</div>
 					<div id="task-details">
-						<h1>${taskDetails.taskDetails.taskname}</h1>
-						<div class="row">
-							<div class="col-sm-3">
-								<h6>
-									<Strong>Start Time:</Strong>${fn:substring(taskDetails.taskDetails.starttime, 0, 10)}
-								</h6>
-							</div>
-							<div class="col-sm-3">
-								<h6>
-									<Strong>End Time:</Strong>${fn:substring(taskDetails.taskDetails.endtime, 0, 10)}</h6>
-							</div>
-							<div class="col-sm-3 col-md-3"></div>
-							<div class="col-sm-3 col-md-3">
+						<fieldset>
+							<legend>Task Details</legend>
 
-								<c:choose>
-									<c:when test="${taskDetails.taskDetails.status eq 'Completed'}">
-										<button class="btn btn-block btn-primary">
-											${taskDetails.taskDetails.status}</button>
-									</c:when>
-									<c:otherwise>
-										<button class="btn btn-block btn-primary" id="task-status">
-											<span>${taskDetails.taskDetails.status}</span>
-										</button>
-									</c:otherwise>
-								</c:choose>
+							<div class="row" align="right">
+								<div class="col-xs-10" align="left">
+									<h1>${taskDetails.taskDetails.taskname}</h1>
+								</div>
 							</div>
-						</div>
-						<hr />
-						<h3>${taskDetails.taskDescription.taskdesc}</h3>
+							<div class="row">
+								<div class="col-sm-3">
+									<h6>
+										<Strong>Start Time:</Strong>${fn:substring(taskDetails.taskDetails.starttime, 0, 10)}
+									</h6>
+								</div>
+								<div class="col-sm-3">
+									<h6>
+										<Strong>End Time:</Strong>${fn:substring(taskDetails.taskDetails.endtime, 0, 10)}</h6>
+								</div>
+								<div class="col-sm-3 col-md-3"></div>
+								<div class="col-sm-3 col-md-3">
+									<button class="btn btn-block btn-primary" id="completedstatus">
+										<span></span>
+									</button>
+									<c:choose>
+										<c:when
+											test="${sessionScope.userid eq taskDetails.taskDetails.userid}">
+											<c:choose>
+												<c:when
+													test="${taskDetails.taskDetails.status eq 'Completed'}">
+													<button class="btn btn-block btn-primary">
+														<span>${taskDetails.taskDetails.status}</span>
+													</button>
+												</c:when>
+												<c:otherwise>
+													<button class="btn btn-block btn-primary" id="task-status">
+														<span>${taskDetails.taskDetails.status}</span>
+													</button>
+												</c:otherwise>
+											</c:choose>
+										</c:when>
+										<c:otherwise>
+											<button class="btn btn-block btn-primary">
+												<span>${taskDetails.taskDetails.status}</span>
+											</button>
+										</c:otherwise>
+									</c:choose>
+
+								</div>
+							</div>
+							<hr />
+							<h4>
+								<strong>Task Description</strong>
+							</h4>
+							<p>${taskDetails.taskDescription.taskdesc}</p>
+							<hr />
+							<div class="row">
+								<div class="col-xs-12">
+									<div id="commentSection">
+										<h4>
+											<strong>Comments</strong>
+										</h4>
+										<c:forEach items="${taskDetails.commentsDetailsList}"
+											var="comments">
+											<P>
+												<b>${comments.userid}</b> : ${comments.comments}
+											</P>
+										</c:forEach>
+									</div>
+								</div>
+								<div class="col-sm-12">
+									<textarea id="comments" placeholder="Write a comment..."></textarea>
+									<input type="hidden" name="taskid" id="taskid"
+										value="${taskDetails.taskDetails.taskid}"> <input
+										type="hidden" name="userid" id="userid"
+										value="${taskDetails.taskDetails.userid}">
+								</div>
+							</div>
+						</fieldset>
 					</div>
 					<div id="task-edit">
-						<spring:url value="/application/editTask" var="formUrl" />
-						<form:form action="${formUrl}" method="POST"
-							modelAttribute="userDetails">
-							<input type="hidden" class="form-control" name="taskid"
-								id="taskid" value="${taskDetails.taskDetails.taskid}">
-							<div class="row">
-								<div class="col-sm-5">
-									<div class="form-group">
-										<label class="control-label" for="taskname">Title</label> <input
-											type="text" class="form-control" name="taskname"
-											id="taskname" value="${taskDetails.taskDetails.taskname}"
-											onblur="titleFormatting()" required>
+						<fieldset>
+							<legend>Edit Details</legend>
+							<spring:url value="/application/editTask" var="formUrl" />
+							<form:form action="${formUrl}" method="POST"
+								modelAttribute="userDetails">
+								<input type="hidden" class="form-control" name="taskid"
+									id="taskid" value="${taskDetails.taskDetails.taskid}">
+								<div class="row">
+									<div class="col-sm-5">
+										<div class="form-group">
+											<label class="control-label" for="taskname">Title</label> <input
+												type="text" class="form-control" name="taskname"
+												id="taskname" value="${taskDetails.taskDetails.taskname}"
+												onblur="titleFormatting()" required>
+										</div>
+									</div>
+									<div class="col-sm-3">
+										<div class="form-group">
+											<label class="control-label" for="startdate">Start
+												Date</label> <input type="text" class="form-control"
+												name="starttime" id="starttime"
+												value="${fn:substring(taskDetails.taskDetails.starttime, 0, 10)}"
+												required readonly>
+										</div>
+									</div>
+									<div class="col-sm-3">
+										<div class="form-group">
+											<label class="control-label" for="enddate">End Date</label> <input
+												type="text" class="form-control" name="endtime" id="endtime"
+												value="${fn:substring(taskDetails.taskDetails.endtime, 0, 10)}"
+												required readonly>
+										</div>
 									</div>
 								</div>
-								<div class="col-sm-3">
-									<div class="form-group">
-										<label class="control-label" for="startdate">Start
-											Date</label> <input type="text" class="form-control" name="starttime"
-											id="starttime"
-											value="${fn:substring(taskDetails.taskDetails.starttime, 0, 10)}"
-											required readonly>
+								<div class="row">
+									<div class="col-sm-5">
+										<div class="form-group">
+											<label class="control-label" for="description">Description</label>
+											<textarea rows="5" class="form-control desc-area"
+												name="taskdesc" required>${taskDetails.taskDescription.taskdesc}</textarea>
+										</div>
+									</div>
+									<div class="col-sm-3">
+										<div class="form-group">
+											<label class="control-label" for="status">Change
+												Status</label> <select class="form-control" name="status"
+												id="status">
+												<option>${taskDetails.taskDetails.status}</option>
+												<option>Pending</option>
+												<option>In Progress</option>
+												<option>Completed</option>
+											</select>
+										</div>
 									</div>
 								</div>
-								<div class="col-sm-3">
-									<div class="form-group">
-										<label class="control-label" for="enddate">End Date</label> <input
-											type="text" class="form-control" name="endtime" id="endtime"
-											value="${fn:substring(taskDetails.taskDetails.endtime, 0, 10)}"
-											required readonly>
+								<div class="row">
+									<div class="col-sm-2">
+										<div class="form-group">
+											<button type="submit" class="btn btn-block btn-info"
+												id="createtaskbttn">Edit Task</button>
+										</div>
 									</div>
 								</div>
-							</div>
-							<div class="row">
-								<div class="col-sm-5">
-									<div class="form-group">
-										<label class="control-label" for="description">Description</label>
-										<textarea rows="5" class="form-control desc-area"
-											name="taskdesc" required>${taskDetails.taskDescription.taskdesc}</textarea>
-									</div>
-								</div>
-								<div class="col-sm-3">
-									<div class="form-group">
-										<label class="control-label" for="status">Change
-											Status</label> <select class="form-control" name="status" id="status">
-											<option>${taskDetails.taskDetails.status}</option>
-											<option>Pending</option>
-											<option>In Progress</option>
-											<option>Completed</option>
-										</select>
-									</div>
-								</div>
-							</div>
-							<div class="row">
-								<div class="col-sm-2">
-									<div class="form-group">
-										<button type="submit" class="btn btn-block btn-info"
-											id="createtaskbttn">Edit Task</button>
-									</div>
-								</div>
-							</div>
-						</form:form>
+							</form:form>
+						</fieldset>
 					</div>
 				</div>
 

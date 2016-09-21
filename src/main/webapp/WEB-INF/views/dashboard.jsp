@@ -21,17 +21,16 @@
 <!-- cdn datatables -->
 <link rel="stylesheet" type="text/css"
 	href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css" />
-<script type="text/javascript" src="//code.jquery.com/jquery-1.12.3.js"></script>
+<script type="text/javascript" src="//code.jquery.com/jquery-1.12.4.js"></script>
 <script type="text/javascript"
 	src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
 
-<!-- cdn jquery and jquery-ui -->
-<!-- <script
-	src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 <link rel="stylesheet"
-	href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.0/themes/smoothness/jquery-ui.css">
-<script
-	src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.js"></script> -->
+	href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+<spring:url value="/resources/javascript/moment.js" var="momentjsUrl" />
+<script type="text/javascript" src="${momentjsUrl}"></script>
 
 <spring:url value="/resources/css/dashboard.css" var="cssUrl" />
 <link rel="stylesheet" href="${cssUrl}" type="text/css" />
@@ -39,54 +38,15 @@
 <spring:url value="/resources/css/application.css" var="appcssUrl" />
 <link rel="stylesheet" href="${appcssUrl}" type="text/css" />
 
-<script>
-	$(document).ready(function() {
-		$('#example').DataTable();
-		$('#add-task').hide();
-	});
-	function titleFormatting() {
-		var taskName = document.getElementById("taskname");
-		console.log(taskName.value);
-		var taskTitle = taskName.value.split(" ");
-		console.log(taskTitle);
-		var titleCase = "";
-		for (var i = 0; i < taskTitle.length; i++) {
-			taskTitle[i] = taskTitle[i].replace(taskTitle[i].charAt(0),
-					taskTitle[i].charAt(0).toUpperCase());
-		}
-		console.log(taskTitle);
-		for (var i = 0; i < taskTitle.length; i++) {
-			titleCase = titleCase + " " + taskTitle[i];
-		}
-		console.log(titleCase);
-		taskName.value = titleCase;
-		//document.getElementById("taskname").innerHTML = titleCase;
-	}
-	function toggleTask() {
-		//create-task add-task
-		var elmnt = document.getElementById("create-task");
-		var x = elmnt.value;
-		if (x === "ctask") {
-			document.getElementById("add-task").style.display = "block";
-			document.getElementById("create-task").innerHTML = "Hide";
-			document.getElementById("create-task").value = "htask";
-			//console.log(document.getElementById("cbutton").value);
-		}
-		if (x === "htask") {
-			console.log(document.getElementById("create-task").value);
-			document.getElementById("add-task").style.display = "none";
-			document.getElementById("create-task").innerHTML = "Create Task";
-			document.getElementById("create-task").value = "ctask";
-		}
-	}
-</script>
+<spring:url value="/resources/javascript/dashboard.js" var="dashboardjsUrl" />
+<script type="text/javascript" src="${dashboardjsUrl}"></script>
 
 </head>
 <body>
 	<!-- <div class="pageheader">Status Tracker</div> -->
 	<nav class="navbar navbar-default navbar-fixed-top navbar-custom"
 		role="navigation">
-	<div class="container-fluid">
+	<div class="container-fluid tracker-header">
 		<!-- Brand and toggle get grouped for better mobile display -->
 		<div class="navbar-header">
 			<button type="button" class="navbar-toggle" data-toggle="collapse"
@@ -99,9 +59,11 @@
 		</div>
 		<div class="collapse navbar-collapse" id="myNavbar">
 			<div class="col-sm-3 col-md-3">
-				<form role="search" class="navbar-form">
+				<spring:url value="/application/searchTask" var="formUrl" />
+				<form:form action="${formUrl}" method="POST"
+					modelAttribute="userDetails">
 					<div class="input-group">
-						<input type="text" name="q" placeholder="Search"
+						<input type="text" name="searchkey" placeholder="Search"
 							class="form-control">
 						<div class="input-group-btn">
 							<button type="submit" class="btn btn-default">
@@ -109,7 +71,7 @@
 							</button>
 						</div>
 					</div>
-				</form>
+				</form:form>
 			</div>
 			<div>
 				<ul class="nav navbar-nav navbar-right">
@@ -134,17 +96,27 @@
 	</nav>
 	<div class="container">
 		<div class="row">
+			<div class="col-md-12 col-sm-12 col-xs-12">
+				<div id="errorMessage"></div>
+			</div>
+		</div>
+		<div class="row">
 			<div class="col-md-2 col-sm-2 col-xs-12">
-				<button class="btn btn-block btn-success" id="create-task" value="ctask" onClick="toggleTask()">Create
-					Task</button>
+				<button class="btn btn-block btn-success" id="create-task"
+					value="ctask" onClick="toggleTask()">Create Task</button>
 			</div>
 		</div>
 		<hr />
 		<div id="add-task">
+			<div class="alert alert-danger" id="taskaddAlert" role="alert">
+				<a href="#" class="close" id="add-task-close">&times;</a>
+			</div>
+
 			<div class="alert alert-info" role="alert">
 				<!-- <a href="#" class="close" id="add-task-close">&times;</a> -->
 				<spring:url value="/application/addTask" var="formUrl" />
-				<form:form action="${formUrl}" method="POST"
+				<form:form action="${formUrl}"
+					onsubmit="return validatetaskDetails()" method="POST"
 					modelAttribute="userDetails">
 					<div class="row">
 						<div class="col-sm-5">
@@ -158,14 +130,15 @@
 							<div class="form-group">
 								<label class="control-label" for="startdate">Start Date</label>
 								<input type="text" class="form-control" name="starttime"
-									id="datepicker1" placeholder="Enter start date" required>
+									id="starttime" placeholder="Enter start date" required
+									readonly="readonly">
 							</div>
 						</div>
 						<div class="col-sm-3">
 							<div class="form-group">
 								<label class="control-label" for="enddate">End Date</label> <input
-									type="text" class="form-control" name="endtime"
-									id="datepicker2" placeholder="Enter end date" required>
+									type="text" class="form-control" name="endtime" id="endtime"
+									placeholder="Enter end date" required readonly="readonly">
 							</div>
 						</div>
 					</div>
@@ -218,8 +191,16 @@
 							<td>${fn:substring(task.taskDetails.starttime, 0, 10)}</td>
 							<td>${fn:substring(task.taskDetails.endtime, 0, 10)}</td>
 							<td>${task.taskDetails.status}</td>
-							<td><a href="#" class="editor_edit">Edit</a>/<a href="#"
-								class="editor_remove">Delete</a></td>
+							<td><c:choose>
+									<c:when
+										test="${sessionScope.userid eq task.taskDetails.userid }">
+										<a href="javascript:void(0);" class="editor_remove"
+											data-url="${pageContext.request.contextPath}/application/taskDelete/${task.taskDetails.taskid}.json">Delete</a>
+									</c:when>
+									<c:otherwise>
+										<span>Task created by other user cannot be deleted</span>
+									</c:otherwise>
+								</c:choose></td>
 						</tr>
 					</c:forEach>
 				</c:if>

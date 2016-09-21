@@ -16,5 +16,8 @@ public interface TaskService {
 	public List<TaskInfo> searchTask(String searchkey);
 	public TaskInfo displaySingleTask(String userid, String taskId);
 	public void editTask(TaskDetails task, TaskDescription desc);
+	public void deleteTask(String taskid);
+	public void updateStatus(String taskid);
+	public String findTaskCreator(String taskId);
 
 }

@@ -1,5 +1,7 @@
 package com.status.tracker.dao;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -9,6 +11,7 @@ import javax.sql.DataSource;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -203,7 +206,58 @@ public class TaskDetailsDaoImpl implements TaskDetailsDao {
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 		}
-		
+
+	}
+
+	@Override
+	public void deleteTask(String taskid) {
+		Session session = this.sessionFactory.getCurrentSession();
+		try {
+			Query cmntsDtlsQuery = session.createQuery("delete CommentsDetails where taskid = :taskid");
+			cmntsDtlsQuery.setParameter("taskid", taskid);
+			int cmntsDtlsResult = cmntsDtlsQuery.executeUpdate();
+
+			Query tskDescQuery = session.createQuery("delete TaskDescription where taskid = :taskid");
+			tskDescQuery.setParameter("taskid", taskid);
+			int tskDescResult = tskDescQuery.executeUpdate();
+
+			Query tskDtlsQuery = session.createQuery("delete TaskDetails where taskid = :taskid");
+			tskDtlsQuery.setParameter("taskid", taskid);
+			int tskDtlsResult = tskDtlsQuery.executeUpdate();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void updateStatus(String taskid) {
+		Session session = this.sessionFactory.getCurrentSession();
+		try {
+			Query updateStatusQuery = session
+					.createQuery("update TaskDetails set status='Completed' where taskid=:taskid");
+			updateStatusQuery.setParameter("taskid", taskid);
+			int updateStatusResult = updateStatusQuery.executeUpdate();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	@Override
+	public String findTaskCreator(String taskid) {
+		Session session = this.sessionFactory.getCurrentSession();
+		String hql = "from TaskDetails where taskid=:taskid";
+		Query query = session.createQuery(hql);
+		query.setParameter("taskid", taskid);
+		Object resultObject = query.uniqueResult();
+		if(resultObject instanceof TaskDetails){
+			TaskDetails taskDetails = (TaskDetails) resultObject;
+			return taskDetails.getUserid();
+		}else{
+		 return "";	
+		}
 	}
 
 }

@@ -12,19 +12,20 @@
 <link rel="stylesheet"
 	href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 <script
-	src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-<script
 	src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<link rel="stylesheet"
-	href="//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
-<link rel="stylesheet" href="/resources/demos/style.css">
-<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-<script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
+
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script type="text/javascript" src="//code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+<spring:url value="/resources/javascript/moment.js" var="momentjsUrl" />
+<script type="text/javascript" src="${momentjsUrl}"></script>
+
 <spring:url value="/resources/css/register.css" var="cssUrl" />
 <link rel="stylesheet" href="${cssUrl}" type="text/css" />
 <script>
 	$(document).ready(function() {
-
+		$("#dobAlert").show();
 		$(function() {
 			$("#dob").datepicker();
 		});
@@ -41,38 +42,17 @@
 		var n = pass.localeCompare(cnfrmpass);
 		if (pass != cnfrmpass) {
 			//alert("Password and Confirm password should be equal");
-			document.getElementById("passwordAlert").innerHTML = "password and confirm password doesnot match";
+			document.getElementById("passwordAlert").innerHTML = "Password and confirm password doesnot match";
 			$("#passwordAlert").show();
 			return false;
 		}
 		if (pass == cnfrmpass) {
 			$("#passwordAlert").hide();
 		}
-		var dt = document.forms["registerForm"]["dateOfBirth"].value;
-		try{
-			var d = new Date(dt);			
-			console.log(Object.prototype.toString.call(d));
-			alert(d);
-		}catch(err){
-			document.getElementById("dobAlert").innerHTML = "Not a valid date of Birth-Exception";
+		if(moment(document.getElementById("dob").value).isAfter(moment.now())){
+			document.getElementById("dobAlert").innerHTML = "Enter a valid DoB";
 			$("#dobAlert").show();
 			return false;
-		}
-		if (Object.prototype.toString.call(d) === "[object Date]") {
-			// it is a date
-			if (isNaN(d.valueOf())) { // d.getTime() could also work
-				// date is not valid
-				document.getElementById("dobAlert").innerHTML = "Not a valid date of Birth";
-				$("#dobAlert").show();
-				return false;
-			} else {
-				// date is valid
-			}
-		} else {
-			document.getElementById("dobAlert").innerHTML = "Not a valid date of Birth---Here";
-			$("#dobAlert").show();
-			return false;
-			// not a date
 		}
 	}
 </script>
@@ -125,7 +105,7 @@
 								<div class="alert alert-danger" id="dobAlert" role="alert"></div>
 								<label class="control-label" for="dob">Date Of Birth</label> <input
 									type="text" class="form-control" id="dob" name="dateOfBirth"
-									placeholder="Enter date of birth" required>
+									placeholder="Enter date of birth" required readonly="readonly">
 							</div>
 							<div class="form-group row">
 								<div class="col-md-3 col-sm-3">

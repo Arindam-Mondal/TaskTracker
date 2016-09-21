@@ -89,4 +89,30 @@ public class TaskServiceImpl implements TaskService{
 		
 	}
 
+
+
+	@Override
+	@Transactional
+	public void deleteTask(String taskid) {
+		this.taskDetailsDao.deleteTask(taskid);
+	}
+
+
+
+	@Override
+	@Transactional
+	public void updateStatus(String taskid) {
+		this.taskDetailsDao.updateStatus(taskid);
+		
+	}
+
+
+
+	@Override
+	@Transactional
+	public String findTaskCreator(String taskid) {
+		
+		return this.taskDetailsDao.findTaskCreator(taskid);
+	}
+
 }

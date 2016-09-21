@@ -14,11 +14,15 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.status.tracker.model.CommentsDetails;
 import com.status.tracker.model.TaskDescription;
@@ -106,47 +110,61 @@ public class TaskController {
 		return "dashboard";
 	}
 
-	@RequestMapping(value = "/addComments")
-	public String addComments(@RequestParam("comments") String comments, @RequestParam("taskid") String taskid,
-			Model model, HttpSession session, HttpServletResponse response) {
+	/*
+	 * @RequestMapping(value = "/addComments") public String
+	 * addComments(@RequestParam("comments") String
+	 * comments, @RequestParam("taskid") String taskid, Model model, HttpSession
+	 * session, HttpServletResponse response) {
+	 * 
+	 * if (null == session.getAttribute("userid")) { return "login"; }
+	 * 
+	 * String userid = session.getAttribute("userid").toString();
+	 * 
+	 * if (null == comments || comments.equals("") || comments.trim().isEmpty())
+	 * { String name = session.getAttribute("name").toString();
+	 * model.addAttribute("name", name);
+	 * 
+	 * List<TaskInfo> taskDetails = taskService.displayTask(userid);
+	 * model.addAttribute("taskDetails", taskDetails); return "dashboard"; }
+	 * 
+	 * CommentsDetails commentsDetails = new CommentsDetails();
+	 * commentsDetails.setTaskid(taskid); commentsDetails.setUserid(userid);
+	 * commentsDetails.setComments(comments); Date date = new Date(); Timestamp
+	 * timestamp = new Timestamp(date.getTime());
+	 * commentsDetails.setCreated(timestamp);
+	 * 
+	 * try { taskService.addComments(commentsDetails); } catch (Exception e) {
+	 * e.printStackTrace(); return "error"; }
+	 * 
+	 * String name = session.getAttribute("name").toString();
+	 * model.addAttribute("name", name);
+	 * 
+	 * List<TaskInfo> taskDetails = taskService.displayTask(userid);
+	 * model.addAttribute("taskDetails", taskDetails);
+	 * 
+	 * return "dashboard"; }
+	 */
 
-		if (null == session.getAttribute("userid")) {
-			return "login";
-		}
-
-		String userid = session.getAttribute("userid").toString();
-
-		if (null == comments || comments.equals("") || comments.trim().isEmpty()) {
-			String name = session.getAttribute("name").toString();
-			model.addAttribute("name", name);
-
-			List<TaskInfo> taskDetails = taskService.displayTask(userid);
-			model.addAttribute("taskDetails", taskDetails);
-			return "dashboard";
-		}
-
-		CommentsDetails commentsDetails = new CommentsDetails();
-		commentsDetails.setTaskid(taskid);
-		commentsDetails.setUserid(userid);
-		commentsDetails.setComments(comments);
-		Date date = new Date();
-		Timestamp timestamp = new Timestamp(date.getTime());
-		commentsDetails.setCreated(timestamp);
+	@RequestMapping(value = "/addComments", method = RequestMethod.POST)
+	public @ResponseBody boolean addComments(@RequestParam("taskid") String taskid,
+			@RequestParam("comments") String comments, HttpSession session) {
+		// System.out.println("inside addcomments");
 
 		try {
+			String userid = session.getAttribute("userid").toString();
+			System.out.println("comments:" + comments + " taskid:" + taskid + " userid:" + userid);
+			CommentsDetails commentsDetails = new CommentsDetails();
+			commentsDetails.setTaskid(taskid);
+			commentsDetails.setUserid(userid);
+			commentsDetails.setComments(comments);
+			Date date = new Date();
+			Timestamp timestamp = new Timestamp(date.getTime());
+			commentsDetails.setCreated(timestamp);
 			taskService.addComments(commentsDetails);
+			return true;
 		} catch (Exception e) {
-			e.printStackTrace();
-			return "error";
+			return false;
 		}
-
-		String name = session.getAttribute("name").toString();
-		model.addAttribute("name", name);
-
-		List<TaskInfo> taskDetails = taskService.displayTask(userid);
-		model.addAttribute("taskDetails", taskDetails);
-
-		return "dashboard";
 	}
 
 	@RequestMapping(value = "/searchTask")
@@ -174,6 +192,7 @@ public class TaskController {
 		String name = session.getAttribute("name").toString();
 		String userid = session.getAttribute("userid").toString();
 		model.addAttribute("name", name);
+		
 
 		List<TaskInfo> taskDetails = taskService.displayTask(userid);
 		model.addAttribute("taskDetails", taskDetails);
@@ -193,8 +212,11 @@ public class TaskController {
 		String name = session.getAttribute("name").toString();
 		String userid = session.getAttribute("userid").toString();
 		model.addAttribute("name", name);
+		
+		String taskCreator = taskService.findTaskCreator(taskId);
+		
 
-		TaskInfo taskDetails = taskService.displaySingleTask(userid, taskId);
+		TaskInfo taskDetails = taskService.displaySingleTask(taskCreator, taskId);
 		model.addAttribute("taskDetails", taskDetails);
 
 		return "taskdetails";
@@ -206,6 +228,8 @@ public class TaskController {
 			@RequestParam("starttime") String starttime, @RequestParam("endtime") String endtime,
 			@RequestParam("taskdesc") String taskdesc, @RequestParam("status") String status, Model model,
 			HttpSession session, HttpServletResponse response) {
+
+		System.out.println("inside editTask");
 
 		if (null == session.getAttribute("userid")) {
 			return "login";
@@ -269,6 +293,28 @@ public class TaskController {
 		model.addAttribute("taskDetails", taskDetails);
 
 		return "taskdetails";
+	}
+
+	@RequestMapping(value = "/taskDelete/{taskid}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public boolean deleteTask(@PathVariable String taskid) {
+		try {
+			taskService.deleteTask(taskid);
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	@RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
+	public @ResponseBody boolean updateStatus(@RequestParam("taskid") String taskid){
+		try{
+			taskService.updateStatus(taskid);
+			return true;
+		}catch(Exception e){
+			return false;
+		}
 	}
 
 }
