@@ -44,7 +44,7 @@ public class LoginController {
 		try{
 			UserDetails userDetails = loginService.getUserDetailsById(username);
 			if(userDetails.getPassword()== null){
-				model.addAttribute("errormsg", "username doesnot exists");
+				model.addAttribute("errormsg", "Wrong username or password.");
 				return "login";
 			}
 			if(userDetails.getPassword().equals(password)){
@@ -61,7 +61,7 @@ public class LoginController {
 				model.addAttribute("taskDetails", taskDetails);*/
 				return "dashboard";
 			}else{
-				model.addAttribute("errormsg", "password entered is wrong.");
+				model.addAttribute("errormsg", "Wrong username or password.");
 				return "login";
 			}
 		}catch(Exception e){

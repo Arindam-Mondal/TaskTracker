@@ -1,10 +1,25 @@
 @CHARSET "UTF-8";
-
-body {
-	background: #E3F2FC;
-	font-family: 'Raleway', sans-serif;
+.pageheader {
+	background-color: #337ab7;
+	color: #fff;
+	font-size: 40px;
+	height: 60px;
+	text-align: center;
 }
-
-.signuparea{
-	padding: 10px 400px;
+.panel{
+	margin: 40px;
+}
+.panel-blue {
+    border-color: #337ab7;
+}
+.panel-heading {
+    background: #337ab7 none repeat scroll 0 0;
+    color: #fff;
+    height: 40px;
+}
+.panel-body{
+	margin: 20px;
+}
+.btn{
+	margin-top:5px;
 }

@@ -1,0 +1,26 @@
+@CHARSET "UTF-8";
+
+.container {
+	padding-top: 100px;
+}
+
+#userDetails{
+	margin-top: 10px;
+}
+
+textarea[name=taskdesc] {
+	/* resize: vertical; */
+	max-height: 150px;
+	min-height: 150px;
+	/* resize: horizontal; */
+	max-width: 100%;
+	min-width: 100%;
+}
+
+textarea[name=commentArea] {
+	max-height: 63px;
+	min-height: 63px;
+	/* resize: horizontal; */
+	max-width: 364px;
+	min-width: 364px;
+}

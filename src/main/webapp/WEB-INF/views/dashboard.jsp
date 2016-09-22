@@ -38,7 +38,8 @@
 <spring:url value="/resources/css/application.css" var="appcssUrl" />
 <link rel="stylesheet" href="${appcssUrl}" type="text/css" />
 
-<spring:url value="/resources/javascript/dashboard.js" var="dashboardjsUrl" />
+<spring:url value="/resources/javascript/dashboard.js"
+	var="dashboardjsUrl" />
 <script type="text/javascript" src="${dashboardjsUrl}"></script>
 
 </head>
@@ -109,7 +110,10 @@
 		<hr />
 		<div id="add-task">
 			<div class="alert alert-danger" id="taskaddAlert" role="alert">
-				<a href="#" class="close" id="add-task-close">&times;</a>
+				<button type="button" class="close" data-dismiss="alert"
+					aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
 			</div>
 
 			<div class="alert alert-info" role="alert">

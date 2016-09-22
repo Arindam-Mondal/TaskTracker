@@ -56,6 +56,7 @@ public class RegisterController {
 				return "error";
 			}
 		}else{
+			model.addAttribute("duplicateUser", "User Already exists!!");
 			return "register";
 		}
 		

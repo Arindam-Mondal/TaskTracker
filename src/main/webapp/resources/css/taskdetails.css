@@ -16,3 +16,11 @@ textarea[name=taskdesc] {
 	max-width: 100%;
 	min-width: 100%;
 }
+
+textarea[name=commentArea] {
+	max-height: 63px;
+	min-height: 63px;
+	/* resize: horizontal; */
+	max-width: 364px;
+	min-width: 364px;
+}

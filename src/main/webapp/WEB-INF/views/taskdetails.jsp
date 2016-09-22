@@ -40,121 +40,9 @@
 
 <spring:url value="/resources/css/application.css" var="appcssUrl" />
 <link rel="stylesheet" href="${appcssUrl}" type="text/css" />
-<script>
-	$(document).ready(
-			function() {
-				$("#task-status").click(
-						function(event) {
-							var taskid = $('#taskid').val();
-							$.ajax({
-								url : "/tracker/application/updateStatus/",
-								data : {
-									"taskid" : taskid
-								},
-								type : "POST",
-								success : function(res) {
-									if (res) {
-										console.log(res);
-										$('#task-status').hide();
-										$('#completedstatus').find('span')
-												.text('Completed');
-										$('#completedstatus').show();
-
-									} else {
-										console.log(res);
-									}
-								}
-							});
-						});
-
-				$("#comments").keypress(
-						function(event) {
-							console.log(event.which);
-							console.log($(this).val());
-							if (event.which == 13) {
-
-								//var userid = $('#userid').val();
-								var taskid = $('#taskid').val();
-								var comments = $('#comments').val();
-								var userid = $('#userid').val();
-								$.ajax({
-									url : "/tracker/application/addComments/",
-									data : {
-										"taskid" : taskid,
-										"comments" : comments
-									},
-									type : "POST",
-
-									/* beforeSend : function(xhr) {
-										xhr.setRequestHeader("Accept",
-												"application/json");
-										xhr.setRequestHeader("Content-Type",
-												"application/json");
-									}, */
-
-									success : function(res) {
-										if (res) {
-											console.log(res);
-											var content = "<P><b>"
-													+ "${sessionScope.userid}"
-													+ "</b> : " + comments
-													+ "</P>";
-											$('#commentSection')
-													.append(content);
-											$('#comments').val("");
-
-										} else {
-											console.log(res);
-										}
-									}
-								});
-							}
-						});
-
-				$('#task-status').hover(
-						function() {
-							$(this).find('span').text('Mark as Complete');
-						},
-						function() {
-							$(this).find('span').text(
-									'${taskDetails.taskDetails.status}');
-						});
-				$('#task-edit').hide();
-				$('#completedstatus').hide();
-				$(function() {
-					$("#starttime").datepicker();
-				});
-				$(function() {
-					$("#endtime").datepicker();
-				});
-			});
-	function openEditDiv() {
-		//edit-btn task-details task-edit
-		var elmnt = document.getElementById("edit-btn");
-		var x = elmnt.value;
-		if (x === "sedittask") {
-			document.getElementById("task-details").style.display = "none";
-			document.getElementById("task-edit").style.display = "block";
-			//document.getElementById("create-task").innerHTML = "Hide";
-			document.getElementById("edit-btn").value = "hedittask";
-			//console.log(document.getElementById("cbutton").value);
-			//changing the format of starttime and endtime
-			document.getElementById("starttime").value = moment(
-					document.getElementById("starttime").value).format(
-					'MM/DD/YYYY');
-			document.getElementById("endtime").value = moment(
-					document.getElementById("endtime").value).format(
-					'MM/DD/YYYY');
-			document.getElementById("edit-btn").children[0].className = "glyphicon glyphicon-remove";
-		}
-		if (x === "hedittask") {
-			document.getElementById("task-edit").style.display = "none";
-			document.getElementById("task-details").style.display = "block";
-			document.getElementById("edit-btn").value = "sedittask";
-			document.getElementById("edit-btn").children[0].className = "glyphicon glyphicon-edit";
-		}
-	}
-</script>
+<spring:url value="/resources/javascript/taskdetails.js"
+	var="taskdetailsjsUrl" />
+<script type="text/javascript" src="${taskdetailsjsUrl}"></script>
 
 </head>
 <body>
@@ -216,8 +104,11 @@
 					test="${sessionScope.userid ne taskDetails.taskDetails.userid }">
 					<div class="alert alert-info" id="alertInfo" role="alert">
 						You won't be able to edit Status or Task Details, since you are
-						not the creator of the task <a href="#" class="close"
-							id="add-task-close">&times;</a>
+						not the creator of the task
+						<button type="button" class="close" data-dismiss="alert"
+							aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
 					</div>
 				</c:if>
 				<div class="well">
@@ -259,6 +150,7 @@
 								</div>
 								<div class="col-sm-3 col-md-3"></div>
 								<div class="col-sm-3 col-md-3">
+								<input type="hidden" id="taskStatus" value="${taskDetails.taskDetails.status}" />
 									<button class="btn btn-block btn-primary" id="completedstatus">
 										<span></span>
 									</button>
@@ -308,21 +200,37 @@
 										</c:forEach>
 									</div>
 								</div>
-								<div class="col-sm-12">
-									<textarea id="comments" placeholder="Write a comment..."></textarea>
+								<div class="col-sm-6">
+									<textarea id="comments" name="commentArea"
+										placeholder="Write a comment..."></textarea>
 									<input type="hidden" name="taskid" id="taskid"
 										value="${taskDetails.taskDetails.taskid}"> <input
 										type="hidden" name="userid" id="userid"
 										value="${taskDetails.taskDetails.userid}">
+								</div>
+								<div class="col-sm-3"></div>
+								<div class="col-sm-3">
+									<form
+										action="<%=request.getContextPath()%>/application/displayTask">
+										<button type="submit" class="btn btn-block btn-primary">Back
+											to Main Page</button>
+									</form>
 								</div>
 							</div>
 						</fieldset>
 					</div>
 					<div id="task-edit">
 						<fieldset>
-							<legend>Edit Details</legend>
+							<legend>Edit Task</legend>
+							<div class="alert alert-danger" id="editTaskAlert" role="alert">
+								<button type="button" class="close" data-dismiss="alert"
+									aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
 							<spring:url value="/application/editTask" var="formUrl" />
-							<form:form action="${formUrl}" method="POST"
+							<form:form action="${formUrl}"
+								onsubmit="return validatetaskDetails()" method="POST"
 								modelAttribute="userDetails">
 								<input type="hidden" class="form-control" name="taskid"
 									id="taskid" value="${taskDetails.taskDetails.taskid}">
@@ -366,7 +274,6 @@
 											<label class="control-label" for="status">Change
 												Status</label> <select class="form-control" name="status"
 												id="status">
-												<option>${taskDetails.taskDetails.status}</option>
 												<option>Pending</option>
 												<option>In Progress</option>
 												<option>Completed</option>

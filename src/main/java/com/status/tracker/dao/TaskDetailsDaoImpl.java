@@ -1,6 +1,5 @@
 package com.status.tracker.dao;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -11,7 +10,6 @@ import javax.sql.DataSource;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -80,7 +78,7 @@ public class TaskDetailsDaoImpl implements TaskDetailsDao {
 		String hql = "from TaskDetails as tdtl, TaskDescription as tdesc where lower(tdtl.taskname) like :keyword"
 				+ " and tdtl.taskid = tdesc.taskid";
 		Query query = session.createQuery(hql);
-		query.setParameter("keyword", "%" + keyword + "%");
+		query.setParameter("keyword", "%" + keyword.toLowerCase() + "%");
 		List<Object> results = query.list();
 
 		List<TaskInfo> taskInfoList = new ArrayList<TaskInfo>();
@@ -113,7 +111,7 @@ public class TaskDetailsDaoImpl implements TaskDetailsDao {
 
 		Session session = this.sessionFactory.getCurrentSession();
 		String hql = "from TaskDetails as tdtl, TaskDescription as tdesc where tdtl.userid=:userid and"
-				+ " tdtl.taskid = tdesc.taskid";
+				+ " tdtl.taskid = tdesc.taskid order by tdtl.starttime DESC";
 		Query query = session.createQuery(hql);
 		query.setParameter("userid", userId);
 		List<Object> results = query.list();

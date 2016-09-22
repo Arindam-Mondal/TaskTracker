@@ -14,7 +14,8 @@
 <script
 	src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
-<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet"
+	href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 <script type="text/javascript" src="//code.jquery.com/jquery-1.12.4.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
@@ -23,39 +24,9 @@
 
 <spring:url value="/resources/css/register.css" var="cssUrl" />
 <link rel="stylesheet" href="${cssUrl}" type="text/css" />
-<script>
-	$(document).ready(function() {
-		$("#dobAlert").show();
-		$(function() {
-			$("#dob").datepicker();
-		});
-		$(function() {
-			$("#passwordAlert").hide();
-		});
-		$(function() {
-			$("#dobAlert").hide();
-		});
-	});
-	function validateForm() {
-		var pass = document.forms["registerForm"]["password"].value;
-		var cnfrmpass = document.forms["registerForm"]["confirmPassword"].value;
-		var n = pass.localeCompare(cnfrmpass);
-		if (pass != cnfrmpass) {
-			//alert("Password and Confirm password should be equal");
-			document.getElementById("passwordAlert").innerHTML = "Password and confirm password doesnot match";
-			$("#passwordAlert").show();
-			return false;
-		}
-		if (pass == cnfrmpass) {
-			$("#passwordAlert").hide();
-		}
-		if(moment(document.getElementById("dob").value).isAfter(moment.now())){
-			document.getElementById("dobAlert").innerHTML = "Enter a valid DoB";
-			$("#dobAlert").show();
-			return false;
-		}
-	}
-</script>
+<spring:url value="/resources/javascript/register.js"
+	var="registerjsUrl" />
+<script type="text/javascript" src="${registerjsUrl}"></script>
 
 </head>
 <body>
@@ -71,6 +42,15 @@
 						</h3>
 					</div>
 					<div class="panel-body">
+						<c:if test="${duplicateUser ne null}">
+							<div class="alert alert-danger" id="alertInfo" role="alert">${duplicateUser}
+								<button type="button" class="close" data-dismiss="alert"
+									aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+
+						</c:if>
 						<spring:url value="/application/registerUser" var="formUrl" />
 						<form:form name="registerForm" action="${formUrl}"
 							modelAttribute="userDetails" onsubmit="return validateForm()"
@@ -96,7 +76,12 @@
 									placeholder="Enter password" required>
 							</div>
 							<div class="form-group row">
-								<div class="alert alert-danger" id="passwordAlert" role="alert"></div>
+								<div class="alert alert-danger" id="passwordAlert" role="alert">
+									<button type="button" class="close" data-dismiss="alert"
+										aria-label="Close">
+										<span aria-hidden="true">&times;</span>
+									</button>
+								</div>
 								<label class="control-label" for="password">Confirm
 									Password</label> <input type="password" class="form-control"
 									name="confirmPassword" placeholder="Re-enter password" required>
