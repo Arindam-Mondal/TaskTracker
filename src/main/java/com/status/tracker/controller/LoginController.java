@@ -2,6 +2,7 @@ package com.status.tracker.controller;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
@@ -38,7 +39,7 @@ public class LoginController {
 							   @RequestParam("password") String password,
 							   Model model,
 							   HttpSession session,
-							   HttpServletResponse response){
+							   HttpServletResponse response,HttpServletRequest request){
 		
 		logger.info("In loggin controller");
 		try{
@@ -52,8 +53,9 @@ public class LoginController {
 				model.addAttribute("name", userDetails.getName());
 				session.setAttribute("name", userDetails.getName());
 				session.setAttribute("userid", userDetails.getUserId());
+				System.out.println(request.getContextPath());
+				response.sendRedirect(request.getContextPath()+"/application/displayTask");
 				
-				response.sendRedirect("/tracker/application/displayTask");
 				/*List<TaskInfo> taskDetails = taskService.displayTask(username);
 				model.addAttribute("name", userDetails.getName());
 				session.setAttribute("name", userDetails.getName());

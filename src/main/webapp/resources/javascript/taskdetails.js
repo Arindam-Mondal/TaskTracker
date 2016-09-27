@@ -3,8 +3,10 @@ $(document).ready(
 				$("#task-status").click(
 						function(event) {
 							var taskid = $('#taskid').val();
+							var linkObj = $(this);
 							$.ajax({
-								url : "/tracker/application/updateStatus/",
+								url : linkObj
+								.attr("data-url"),
 								data : {
 									"taskid" : taskid
 								},
@@ -24,18 +26,19 @@ $(document).ready(
 							});
 						});
 
-				$("#comments").keypress(
+				$("#commentBtn").on("click",
 						function(event) {
 							console.log(event.which);
 							console.log($(this).val());
-							if (event.which == 13) {
+							var linkObj = $(this);
 
 								//var userid = $('#userid').val();
 								var taskid = $('#taskid').val();
 								var comments = $('#comments').val();
-								var userid = $('#userid').val();
+								var userid = $('#commentedBy').val();
 								$.ajax({
-									url : "/tracker/application/addComments/",
+									url : linkObj
+									.attr("data-url"),
 									data : {
 										"taskid" : taskid,
 										"comments" : comments
@@ -53,7 +56,7 @@ $(document).ready(
 										if (res) {
 											console.log(res);
 											var content = "<P><b>"
-													+ "${sessionScope.userid}"
+													+ userid
 													+ "</b> : " + comments
 													+ "</P>";
 											$('#commentSection')
@@ -65,7 +68,7 @@ $(document).ready(
 										}
 									}
 								});
-							}
+							
 						});
 
 				$('#task-status').hover(

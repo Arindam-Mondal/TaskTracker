@@ -153,6 +153,9 @@ public class TaskController {
 		try {
 			String userid = session.getAttribute("userid").toString();
 			System.out.println("comments:" + comments + " taskid:" + taskid + " userid:" + userid);
+			if(comments.trim().equals("")||comments==null){
+				return false;
+			}
 			CommentsDetails commentsDetails = new CommentsDetails();
 			commentsDetails.setTaskid(taskid);
 			commentsDetails.setUserid(userid);
