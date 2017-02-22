@@ -17,9 +17,9 @@
 		<beans:property name="username" value="admin" />
 		<beans:property name="password" value="admin" /> -->
 		<!-- freemysqlhosting config -->
-		<beans:property name="url" value="jdbc:mysql://sql6.freemysqlhosting.net/sql6136996" />
-		<beans:property name="username" value="sql6136996" />
-		<beans:property name="password" value="pZVdbhMYQi" />
+		<beans:property name="url" value="jdbc:mysql://sql9.freemysqlhosting.net/sql9160275" />
+		<beans:property name="username" value="sql9160275" />
+		<beans:property name="password" value="vuvrAAQspA" />
 	</beans:bean>
 
 	<!-- Hibernate 4 SessionFactory Bean definition -->
